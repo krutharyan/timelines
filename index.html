@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Akshara's Timeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat&display=swap" rel="stylesheet">
+<style>
+/* Universal Box Model Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background: white;
+  color: #444;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Header - Blending using ::after pseudo-element */
+.header-box {
+  width: 100%;
+  border: none;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Restored subtle shadow */
+  position: relative; /* Essential for ::after positioning */
+}
+
+/* Pseudo-element for the smooth white-to-transparent blend */
+.header-box::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(to bottom, 
+                              rgba(255, 255, 255, 1) 0%, 
+                              rgba(255, 255, 255, 0) 100%); 
+  pointer-events: none; 
+  z-index: 9; 
+}
+
+.title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.5rem;
+  color: black;
+}
+
+.nav-btn {
+  background-color: #ffa95e;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 169, 94, 0.4);
+}
+
+/* Film Roll Gallery - Adjusted padding-top */
+.gallery-wrapper {
+  background: #fff3e6;
+  padding-top: 10rem;
+  padding-bottom: 6rem;
+  position: relative;
+}
+
+.gallery-heading {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #444;
+  text-align: left;
+  padding-left: 2rem;
+  padding-bottom: 1rem;
+}
+
+.film-roll {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
+  padding: 60px 0;
+}
+
+.film-strip {
+  position: relative;
+  height: 500.8px;
+  background: #111;
+  border-top: 25px solid #fff3e6;
+  border-bottom: 25px solid #fff3e6;
+  overflow: hidden;
+  margin: 0 0.3px 0 0.3px;
+}
+
+/* Punch Holes for Film Strip */
+.film-strip::before,
+.film-strip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 25px;
+  background: 
+    repeating-linear-gradient(
+      to right,
+      #fff3e6 0px,
+      #fff3e6 10px,
+      transparent 10px,
+      transparent 30px
+    );
+  z-index: 2;
+}
+
+.film-strip::before {
+  top: 12px;
+}
+
+.film-strip::after {
+  bottom: 12px;
+}
+
+.film-scroll {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  padding: 0 60px;
+  gap: 40px;
+}
+
+.film-image {
+  width: 238px;
+  height: 336px;
+  background-size: cover;
+  background-position: center;
+  border: 10px solid white;
+  border-radius: 4px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+  position: relative;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: all 0.6s ease-out;
+}
+
+.film-image.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Timeline Sections */
+.section {
+  height: 100vh; /* Keeps sections full height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  padding-top: 8rem;
+}
+
+/* Timeline Items - REVISED for scroll-driven animation */
+.timeline-item {
+  position: absolute;
+  opacity: 0; /* Hidden initially */
+  width: 80%;
+  max-width: 800px;
+  font-size: 1.3rem;
+  color: #333;
+  background: #fff2e6;
+  padding: 3rem;
+  border-radius: 30px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+  
+  /* REMOVED default transition. JavaScript will now directly control position and opacity. */
+}
+
+.timeline-item.left {
+  left: 5%;
+  text-align: left;
+  /* Initial transform will be set by JS if not intersecting */
+}
+
+.timeline-item.right {
+  right: 5%;
+  text-align: right;
+  /* Initial transform will be set by JS if not intersecting */
+}
+
+/* Footer Styling */
+.footer-box {
+  background-color: #fff3e6; /* Matches your gallery background for seamless look */
+  color: #666;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  font-size: 0.9rem;
+  border-top: 1px solid #ffe8cc; /* A very subtle top border */
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .film-strip {
+    height: 380.8px;
+    margin: 0 0.3px;
+  }
+  
+  .film-image {
+    width: 168px;
+    height: 238px;
+  }
+  
+  .film-scroll {
+    padding: 0 30px;
+    gap: 20px;
+  }
+  
+  .timeline-item {
+    width: 90%;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+    padding: 2rem;
+  }
+  
+  .header-box {
+    flex-direction: column;
+    padding: 1rem; 
+  }
+  
+  .header-box::after {
+    bottom: -20px;
+    height: 40px;
+  }
+  
+  .title {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+  }
+  
+  .gallery-wrapper {
+    padding-top: 10rem;
+  }
+  
+  .footer-box {
+    padding: 1.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="header-box">
+  <div class="title">Akshara's Timeline</div>
+  <button class="nav-btn" onclick="window.location.href='friends.html'">Her Life</button>
+</div>
+
+<div class="gallery-wrapper">
+  <div class="gallery-heading">A Glimpse Through Her Moments</div>
+  
+  <div class="film-roll">
+    <div class="film-strip">
+      <div class="film-scroll" id="scrollGallery">
+        <div class="film-image" style="background-image: url('ak1.jpeg');"></div>
+        <div class="film-image" style="background-image: url('ak2.jpeg');"></div>
+        <div class="film-image" style="background-image: url('ak3.jpeg');"></div>
+        <div class="film-image" style="background-image: url('ak4.jpeg');"></div>
+        <div class="film-image" style="background-image: url('ak1.jpeg');"></div>
+        <div class="film-image" style="background-image: url('ak2.jpeg');"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="timeline-item left">
+    <div class="year">2010</div>
+    <p>She smiled at the world for the first time, and the world smiled back.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="timeline-item right">
+    <div class="year">2015</div>
+    <p>With school came friendships, stories, and dreams as vast as the sky.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="timeline-item left">
+    <div class="year">2018</div>
+    <p>A creative spark lit up—drawing, dancing, dreaming, and doing it all.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="timeline-item right">
+    <div class="year">2022</div>
+    <p>Confidence bloomed. A leader emerged, calm and courageous.</p>
+  </div>
+</div>
+
+<footer class="footer-box">
+  &copy; 2025 Akshara's Timeline. All rights reserved.
+</footer>
+
+<script>
+// Image fade-in animation
+const filmImages = document.querySelectorAll('.film-image');
+const filmObserver = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+      }
+    });
+  },
+  { threshold: 0.1 }
+);
+filmImages.forEach(img => filmObserver.observe(img));
+
+// Timeline animation - REVISED for scroll-driven, directional animation with re-trigger
+const timelineItems = document.querySelectorAll('.timeline-item');
+
+// Define the range of thresholds for granular control
+const thresholds = Array.from({ length: 101 }, (_, i) => i / 100); // [0, 0.01, ..., 1.00]
+
+const timelineObserver = new IntersectionObserver(
+  (entries, observer) => {
+    entries.forEach(entry => {
+      const item = entry.target;
+      const isLeft = item.classList.contains('left');
+      const startPosition = isLeft ? -100 : 100; // Pixels off-screen
+      
+      // Calculate how much to animate based on intersectionRatio
+      // We want it to be fully visible at intersectionRatio 1, and fully hidden at 0.
+      // Let's make it fully visible slightly before 1 (e.g., at 0.7-0.8) for better feel.
+      const animationProgress = Math.min(1, Math.max(0, (entry.intersectionRatio - 0.2) / 0.8));
+      
+      // Calculate current transform
+      const currentTransform = startPosition * (1 - animationProgress);
+      
+      item.style.transform = `translateX(${currentTransform}px)`;
+      item.style.opacity = animationProgress;
+
+      // Ensure that when completely out of view, it resets to the start position
+      // This is crucial for re-triggering and quick "going back in"
+      if (!entry.isIntersecting && entry.boundingClientRect.top > window.innerHeight) {
+        // If scrolling down and element is completely below viewport
+        item.style.transform = `translateX(${startPosition}px)`;
+        item.style.opacity = 0;
+      } else if (!entry.isIntersecting && entry.boundingClientRect.bottom < 0) {
+        // If scrolling up and element is completely above viewport
+        item.style.transform = `translateX(${startPosition}px)`;
+        item.style.opacity = 0;
+      }
+    });
+  },
+  { 
+    threshold: thresholds, // Use multiple thresholds for granular updates
+    rootMargin: "0px 0px 0px 0px" // No extra margin
+  }
+);
+
+timelineItems.forEach(item => {
+  // Set initial state immediately to ensure it's hidden before any scroll
+  const isLeft = item.classList.contains('left');
+  const startPosition = isLeft ? -100 : 100;
+  item.style.transform = `translateX(${startPosition}px)`;
+  item.style.opacity = 0;
+
+  timelineObserver.observe(item);
+});
+
+
+// Smooth horizontal scroll (keep as is)
+const scrollGallery = document.getElementById('scrollGallery');
+window.addEventListener('scroll', () => {
+  const offset = window.scrollY;
+  scrollGallery.style.transform = `translateX(-${offset * 0.4}px)`;
+});
+</script>
+</body>
+</html>
